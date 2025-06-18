@@ -38,7 +38,7 @@ class CatalogActivity : AppCompatActivity() {
         adapterPelicula = PeliculaAdapter(this, movies)
         adapterSerie= PeliculaAdapter(this, series)
         val moviesCatalog: GridView = findViewById(R.id.movies_catalog)
-        val seriesCatalog: GridView= findViewById(R.id.series_catalog)
+        val seriesCatalog: GridView= findViewById(R.id.movies_catalog)
         moviesCatalog.adapter = adapterPelicula
         seriesCatalog.adapter=adapterSerie
     }
@@ -234,6 +234,8 @@ class PeliculaAdapter(context: Context, var movies: ArrayList<Movie>) : BaseAdap
             intent.putExtra("image", pelicula.image)
             intent.putExtra("header", pelicula.header)
             intent.putExtra("sinopsis", pelicula.sinopsis)
+            intent.putExtra("numSeats", 20 - pelicula.seats.size)
+            intent.putExtra("position", position)
             context!!.startActivity(intent)
         }
         return vista

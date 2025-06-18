@@ -1,12 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:id="@+id/main"
     android:orientation="vertical"
+    android:background="@color/black"
     tools:context=".MovieDetail">
-    >
-
 
     <ImageView
         android:id="@+id/img_pelicula"
@@ -30,27 +29,64 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
-            android:textSize="32sp" />
+            android:textSize="28sp" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/yellow"
             android:layout_gravity="center"
-            android:layout_marginStart="15dp"
-            />
+            android:layout_marginStart="15dp" />
 
 
     </LinearLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginBottom="30dp"
+        >
 
-    <TextView
-        android:id="@+id/txt_sinopsis"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_sinopsis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/movie_description_example"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn_buy_tickets"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/movie_description_example"
-        android:textSize="17sp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:text="Buy My Ticket!"
+        android:textAllCaps="true"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/yellow"
+        android:paddingHorizontal="@dimen/padding_button"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/seats_left"
+        android:textColor="@color/gray"
+        android:textStyle="italic"
+        android:layout_marginTop="10dp"
+        android:text="No. of seats left: 100"
+        android:textAlignment="center"
+
         />
+
 </LinearLayout>
