@@ -45,8 +45,6 @@ class Ticket : AppCompatActivity() {
             findViewById<TextView>(R.id.txt_pelicula).text = title
             findViewById<TextView>(R.id.txt_asiento).text = Html.fromHtml("Seat selected: <b>$seat</b>", Html.FROM_HTML_MODE_LEGACY)
             findViewById<TextView>(R.id.txt_fecha).text = Html.fromHtml("Date: <b>28/02/2025</b>", Html.FROM_HTML_MODE_LEGACY)
-            findViewById<TextView>(R.id.txt_hora).text = Html.fromHtml("Time: <b>19:00</b>", Html.FROM_HTML_MODE_LEGACY)
-            findViewById<TextView>(R.id.txt_precio).text = Html.fromHtml("Price: <b>$4.0</b>", Html.FROM_HTML_MODE_LEGACY)
 
         }
 

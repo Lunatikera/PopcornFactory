@@ -1,12 +1,11 @@
 package rios.carlos.popcornfactory
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.RadioButton
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,7 +14,10 @@ import androidx.core.view.WindowInsetsCompat
 class SeatSelection : AppCompatActivity() {
     private lateinit var radioButtons: List<RadioButton>
     private lateinit var title: TextView
+    private lateinit var gridSeats: GridLayout
     private var movieId: Int = -1
+    private var totalSeats: Int = 0
+    private lateinit var prefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,43 +31,19 @@ class SeatSelection : AppCompatActivity() {
         Log.d("SeatSelection", "onCreate")
 
         title = findViewById(R.id.txt_title_seats)
+        gridSeats = findViewById(R.id.grid_seats)
         movieId = intent.extras?.getInt("id", -1) ?: -1
+        totalSeats = intent.extras?.getInt("totalSeats", 20) ?: 20 // Default 20 seats
         title.text = intent.extras?.getString("title", "")
+
+        prefs = getSharedPreferences("popcorn_factory", MODE_PRIVATE)
 
         initRadioButtons()
         initBtnConfirm()
     }
 
-    private fun initBtnConfirm() {
-        val btnConfirm = findViewById<Button>(R.id.btn_confirm)
-
-        btnConfirm.setOnClickListener {
-            val selectedSeat = getSelectedSeat()
-            if (selectedSeat == null) {
-                Toast.makeText(this, "Please select a seat", Toast.LENGTH_SHORT).show()
-                Log.d("SeatSelection", "No seat selected")
-                return@setOnClickListener
-            }
-            Log.d("SeatSelection", "Selected seat: $selectedSeat")
-
-            // Guardar el asiento comprado en SharedPreferences con clave única por movieId
-            val prefs = getSharedPreferences("popcorn_factory", MODE_PRIVATE)
-            val key = "booked_seats_$movieId"
-            val bookedSeats = prefs.getStringSet(key, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-            bookedSeats.add(selectedSeat.toString())
-            prefs.edit().putStringSet(key, bookedSeats).apply()
-
-            // Ir a pantalla de ticket
-            val intent = Intent(this, Ticket::class.java)
-            intent.putExtra("id", movieId)
-            intent.putExtra("title", title.text.toString())
-            intent.putExtra("seat", selectedSeat)
-            startActivity(intent)
-            finish()
-        }
-    }
-
     private fun initRadioButtons() {
+        // Crear lista de todos los posibles asientos
         radioButtons = listOf(
             findViewById(R.id.seat1),
             findViewById(R.id.seat2),
@@ -89,22 +67,60 @@ class SeatSelection : AppCompatActivity() {
             findViewById(R.id.seat20)
         )
 
-        val prefs = getSharedPreferences("popcorn_factory", MODE_PRIVATE)
+        // Obtener asientos reservados
         val key = "booked_seats_$movieId"
-        val bookedSeats = prefs.getStringSet(key, emptySet())
+        val bookedSeats = prefs.getStringSet(key, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
 
-        radioButtons.forEach { button ->
-            val seatNumber = button.text.toString()
-            if (bookedSeats?.contains(seatNumber) == true) {
-                button.isEnabled = false
-            }
+        // Configurar visibilidad y estado de los asientos
+        for (i in 0 until radioButtons.size) {
+            val seatNumber = i + 1
+            val button = radioButtons[i]
 
-            button.setOnClickListener {
-                if (button.isEnabled) {
-                    radioButtons.forEach { it.isChecked = false }
-                    button.isChecked = true
+            if (seatNumber > totalSeats) {
+                // Ocultar asientos que no existen para esta película
+                button.visibility = View.GONE
+            } else {
+                // Configurar texto y comportamiento
+                button.text = seatNumber.toString()
+                button.isEnabled = !bookedSeats.contains(seatNumber.toString())
+
+                button.setOnClickListener {
+                    if (button.isEnabled) {
+                        radioButtons.forEach { it.isChecked = false }
+                        button.isChecked = true
+                    }
                 }
             }
+        }
+
+        // Ajustar el GridLayout para mostrar solo las filas necesarias
+        val rows = (totalSeats + gridSeats.columnCount - 1) / gridSeats.columnCount
+        gridSeats.rowCount = rows
+    }
+
+    private fun initBtnConfirm() {
+        val btnConfirm = findViewById<Button>(R.id.btn_confirm)
+
+        btnConfirm.setOnClickListener {
+            val selectedSeat = getSelectedSeat()
+            if (selectedSeat == null) {
+                Toast.makeText(this, "Please select a seat", Toast.LENGTH_SHORT).show()
+                Log.d("SeatSelection", "No seat selected")
+                return@setOnClickListener
+            }
+            Log.d("SeatSelection", "Selected seat: $selectedSeat")
+
+            val key = "booked_seats_$movieId"
+            val bookedSeats = prefs.getStringSet(key, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+            bookedSeats.add(selectedSeat.toString())
+            prefs.edit().putStringSet(key, bookedSeats).apply()
+
+            val intent = Intent(this, Ticket::class.java)
+            intent.putExtra("id", movieId)
+            intent.putExtra("title", title.text.toString())
+            intent.putExtra("seat", selectedSeat)
+            startActivity(intent)
+            finish()
         }
     }
 

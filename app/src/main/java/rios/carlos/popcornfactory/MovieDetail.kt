@@ -22,7 +22,7 @@ class MovieDetail : AppCompatActivity() {
         }
 
         val bundle = intent.extras
-        var numSeats = 0
+        var totalSeats = 0 // Cambiado de numSeats a totalSeats
         var id = -1
         var title = ""
 
@@ -30,17 +30,17 @@ class MovieDetail : AppCompatActivity() {
             title = bundle.getString("titulo") ?: ""
             val header = bundle.getInt("header")
             val sinopsis = bundle.getString("sinopsis")
-            numSeats = bundle.getInt("numSeats")
+            totalSeats = bundle.getInt("totalSeats") // Recibe el total de asientos
             id = bundle.getInt("id")
 
             findViewById<TextView>(R.id.txt_titulo).text = title
             findViewById<TextView>(R.id.txt_sinopsis).text = sinopsis
             findViewById<ImageView>(R.id.img_pelicula).setImageResource(header)
-            findViewById<TextView>(R.id.seats_left).text = "$numSeats seats available"
+            findViewById<TextView>(R.id.seats_left).text = "$totalSeats seats available"
         }
 
         val btnBuy = findViewById<Button>(R.id.btn_buy_tickets)
-        if (numSeats == 0) {
+        if (totalSeats == 0) {
             findViewById<TextView>(R.id.seats_left).text = "No seats available"
             btnBuy.isEnabled = false
         } else {
@@ -48,7 +48,7 @@ class MovieDetail : AppCompatActivity() {
                 val intent = Intent(this, SeatSelection::class.java)
                 intent.putExtra("id", id)
                 intent.putExtra("title", title)
-                intent.putExtra("numSeats", numSeats)
+                intent.putExtra("totalSeats", totalSeats) // Pasa el total de asientos
                 startActivity(intent)
             }
         }
